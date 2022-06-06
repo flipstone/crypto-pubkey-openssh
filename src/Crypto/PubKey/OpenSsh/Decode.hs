@@ -1,10 +1,10 @@
-{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE CPP, OverloadedStrings, RecordWildCards #-}
 
 module Crypto.PubKey.OpenSsh.Decode where
 
 import Prelude hiding (take)
 
-import Control.Applicative ((*>), (<|>))
+import Control.Applicative ((<|>))
 import Control.Monad (void, replicateM)
 import Data.ByteString.Char8 (ByteString)
 import Data.Char (isControl)
@@ -17,13 +17,17 @@ import Data.ASN1.Types (ASN1(IntVal, Start, End), ASN1ConstructionType(Sequence)
 import Data.ASN1.BinaryEncoding (DER(..))
 import Data.Serialize (Get, getBytes, runGet, getWord32be, getWord8)
 import qualified Data.ByteString.Base64 as Base64
-import qualified Crypto.Types.PubKey.DSA as DSA
-import qualified Crypto.Types.PubKey.RSA as RSA
+import qualified Crypto.PubKey.DSA as DSA
+import qualified Crypto.PubKey.RSA as RSA
 
 import Crypto.PubKey.OpenSsh.Types (OpenSshKeyType(..), OpenSshPublicKey(..),
                                     OpenSshPrivateKey(..))
 
+#if !MIN_VERSION_base(4,13,0)
 readType :: Monad m => ByteString -> m OpenSshKeyType
+#else
+readType :: MonadFail m => ByteString -> m OpenSshKeyType
+#endif
 readType "ssh-rsa" = return OpenSshKeyTypeRsa
 readType "ssh-dss" = return OpenSshKeyTypeDsa
 readType _ = fail "Invalid key type"
@@ -82,7 +86,7 @@ decodePrivate bs = pemParseBS bs >>= \pems -> case pems of
         case pemName of
             "RSA PRIVATE KEY" -> parseRSA p
             "DSA PRIVATE KEY" -> parseDSA p
-            _                 -> Left "Unknown private key type"
+            unknownName       -> Left $ "Unknown private key type: " <> unknownName
   where
     parseDSA  :: PEM -> Either String OpenSshPrivateKey
     parseDSA (PEM {..}) =
