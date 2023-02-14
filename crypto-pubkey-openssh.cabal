@@ -1,5 +1,5 @@
 Name:               crypto-pubkey-openssh
-Version:            0.2.8
+Version:            0.2.9
 Synopsis:           OpenSSH keys decoder/encoder
 Description:        OpenSSH keys decoder/encoder
 License:            MIT
@@ -28,7 +28,7 @@ Library
   Hs-source-dirs:   src
   Ghc-options:      -Wall -fno-warn-orphans
   Default-language: Haskell2010
-  Build-depends:    base                       >= 4.5 && < 4.13
+  Build-depends:    base                       >= 4.16 && < 4.17
                   , bytestring
                   , base64-bytestring
                   , cereal
@@ -52,7 +52,7 @@ Test-suite crypto-pubkey-openssh-tests
   if flag(OpenSsh)
     cpp-options: -DOPENSSH
 
-  Build-depends:    base                       >= 4.5 && < 4.13
+  Build-depends:    base                       >= 4.16 && < 4.17
                   , bytestring
                   , base64-bytestring
                   , cereal
@@ -72,6 +72,10 @@ Test-suite crypto-pubkey-openssh-tests
 
   Other-modules:    Crypto.PubKey.OpenSsh.Encode.Tests
                     Crypto.PubKey.OpenSsh.Decode.Tests
+                    Crypto.PubKey.OpenSsh
+                    Crypto.PubKey.OpenSsh.Decode
+                    Crypto.PubKey.OpenSsh.Encode
+                    Crypto.PubKey.OpenSsh.Types
                     SshKeygen
 
 Source-repository head
