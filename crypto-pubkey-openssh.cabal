@@ -1,5 +1,5 @@
 Name:               crypto-pubkey-openssh
-Version:            0.2.10
+Version:            0.2.10.1
 Synopsis:           OpenSSH keys decoder/encoder
 Description:        OpenSSH keys decoder/encoder
 License:            MIT
@@ -15,7 +15,8 @@ Category:           Cryptography, Parsing
 Stability:          Alpha
 Build-type:         Simple
 Cabal-version:      >= 1.12
-Tested-with:        GHC == 9.4.*
+Tested-with:
+    GHC == 8.10.7, GHC == 9.0.2, GHC == 9.4.7, GHC == 9.6.7, GHC == 9.8.4, GHC == 9.10.2
 
 Extra-source-files:
   README.md
@@ -24,11 +25,23 @@ Flag OpenSsh
   Description:      Test with ssh-keygen
   Default:          False
 
+Flag ci
+  Description: More strict ghc options used for development and ci, not intended for end-use.
+  Manual: True
+  Default: False
+
 Library
   Hs-source-dirs:   src
-  Ghc-options:      -Wall -fno-warn-orphans
+
+  if flag(ci)
+    Ghc-options: -Wall -Werror -Wcompat -Wcpp-undef -Widentities -Wincomplete-uni-patterns -Wincomplete-patterns -Wincomplete-record-updates -Wnoncanonical-monad-instances -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations -Wno-implicit-prelude -Wno-safe -Wno-unsafe
+    if impl (ghc >= 9.8)
+      Ghc-options: -Wterm-variable-capture -Wextended-warnings
+  else
+    Ghc-options: -Wall
+
   Default-language: Haskell2010
-  Build-depends:    base                       >= 4.16 && < 4.19
+  Build-depends:    base                       >= 4.14 && < 4.22
                   , bytestring
                   , base64-bytestring
                   , cereal
@@ -52,7 +65,7 @@ Test-suite crypto-pubkey-openssh-tests
   if flag(OpenSsh)
     cpp-options: -DOPENSSH
 
-  Build-depends:    base                       >= 4.16 && < 4.19
+  Build-depends:    base
                   , bytestring
                   , base64-bytestring
                   , cereal

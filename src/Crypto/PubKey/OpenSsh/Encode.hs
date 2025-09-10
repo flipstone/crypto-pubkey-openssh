@@ -23,7 +23,7 @@ import Crypto.PubKey.OpenSsh.Types (OpenSshKeyType(..), OpenSshPublicKey(..),
 
 fixZeroByte :: [Word8] -> [Word8]
 fixZeroByte [] = []
-fixZeroByte bs = if testBit (head bs) msb then 0:bs else bs
+fixZeroByte bs@(b:_) = if testBit b msb then 0:bs else bs
   where
     msb = 7
 
